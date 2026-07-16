@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Roles de Usuario ──────────────────────────────────────────────────────────
+model Rol {
+  id       Int       @id @default(autoincrement())
+  nombre   String    @unique @db.VarChar(50)
+  usuarios Usuario[]
+
+  @@map("roles")
+}
+
+// ─── Usuarios del Sistema ──────────────────────────────────────────────────────
+model Usuario {
+  id               Int     @id @default(autoincrement())
+  username         String  @unique @db.VarChar(100)
+  password_hash    String  @db.VarChar(255)
+  nombre_completo  String  @db.VarChar(200)
+  intentos_fallidos Int    @default(0)
+  bloqueado        Boolean @default(false)
+  activo           Boolean @default(true)
+  id_rol           Int
+
+  rol              Rol     @relation(fields: [id_rol], references: [id])
+
+  @@map("usuarios")
+}
+
+// ─── Productores Ganaderos ────────────────────────────────────────────────────
+model Productor {
+  id                  Int            @id @default(autoincrement())
+  nombre              String         @db.VarChar(200)
+  ci_nit              String         @unique @db.VarChar(50)
+  estancia_ubicacion  String?        @db.VarChar(300)
+  activo              Boolean        @default(true)
+
+  lotes               LoteCarcasa[]
+
+  @@map("productores")
+}
+
+// ─── Lotes / Carcasas (Inventario principal) ──────────────────────────────────
+model LoteCarcasa {
+  id                  Int       @id @default(autoincrement())
+  codigo_qr           String    @unique @db.VarChar(255)
+  peso_ingreso        Float     // Debe ser > 0.2 kg (validado en backend)
+  peso_salida         Float?    // Nullable hasta despacho
+  merma               Float?    // peso_ingreso - peso_salida
+  merma_porcentaje    Float?    // (merma / peso_ingreso) * 100
+  fecha_hora_ingreso  DateTime  @default(now()) @db.Timestamptz
+  fecha_hora_despacho DateTime? @db.Timestamptz
+  estado              String    @default("En Cámara") @db.VarChar(50)
+  observaciones       String?   @db.Text
+  id_productor        Int
+
+  productor           Productor @relation(fields: [id_productor], references: [id])
+
+  @@index([estado])
+  @@index([fecha_hora_ingreso])
+  @@map("lotes_carcasa")
+}

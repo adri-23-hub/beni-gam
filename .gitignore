@@ -1,0 +1,38 @@
+# Node.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# Python
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/.venv
+backend/venv/
+backend/ENV/
+backend/env/
+backend/.env
+
+# PDFs and QRs generated locally
+backend/static/pdfs/*.pdf
+!backend/static/pdfs/.gitkeep
+
+# IDEs & System
+.idea/
+.vscode/
+*.suo
+*.ntvsca*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
